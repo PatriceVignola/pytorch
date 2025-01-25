@@ -53,6 +53,13 @@ def infer_schema(
         (Tensor x) -> Tensor
     """
     UNKNOWN_MUTATES = "unknown"
+    pf_globals = prototype_function.__globals__
+    # To do this properly we really need `locals()` from the scope of the
+    # prototype_function. Unfortunately there doesn't seem to be any way to get
+    # that consistently.
+    pf_locals = None
+    # TODO: py3.10+ pass the `globals` parameter and we no longer need to deal
+    # with stringified annotations.
     sig = inspect.signature(prototype_function)
 
     def error_fn(what):
@@ -62,7 +69,7 @@ def infer_schema(
 
     def convert_type_string(annotation_type: str):
         try:
-            return eval(annotation_type)
+            return eval(annotation_type, pf_globals, pf_locals)
         except Exception:
             error_fn(
                 f"Unsupported type annotation {annotation_type}. It is not a type."
