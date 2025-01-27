@@ -1110,6 +1110,7 @@ class TestInductorOpInfo(TestCase):
             def _get_tolerances(dtype):
                 _custom_tolerances = {
                     torch.float32: (1.3e-5, 1.5e-5),
+                    torch.float16: (1.3e-5, 1.5e-4),
                 }
                 if dtype in _custom_tolerances:
                     return _custom_tolerances[dtype]
